@@ -1,5 +1,4 @@
 package org.example;
-import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -9,7 +8,7 @@ public class Game {
      private Cards cards; //instance of the card class
      private int numberOfPlayers = 3;
      private int deckSize;
-     private List<String> players;
+     private ArrayList<String> players;
      private int startingPlayer;
      private String activePlayer;
      private String winningPlayer;
@@ -17,7 +16,7 @@ public class Game {
      private ArrayList<String> drawCardsPile;
 
      public Game() {
-         System.out.printl("WLCOME TO THE BOHNANZA GAME!");
+         System.out.print("WLCOME TO THE BOHNANZA GAME!");
          numberOfPlayers =  countPlayers();
             ArrayList<Player> players = new ArrayList<Player>();
             for (int i = 1; i <= numberOfPlayers; i++) {
