@@ -1,6 +1,5 @@
 package org.example;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -14,7 +13,7 @@ public class Game {
      private String winningPlayer;
      private int winnerScore;
      private ArrayList<String> drawCardsPile;
-
+     public static final int deckSize = 157;
      public Game() {
          System.out.print("WLCOME TO THE BOHNANZA GAME!");
          numberOfPlayers =  countPlayers();
@@ -67,10 +66,19 @@ public class Game {
     }
 
     public void shuffle(){
-        ArrayList<Cards> cards = new ArrayList<>(104);
-        for (int i = 0; i < cards.size(); i++) {
-            //cards.
+        ArrayList<Cards> drawCardsPile = new ArrayList<>(104);
+        for (int i = 0; i < deckSize; ++i) {
+            drawCardsPile.add(i);
         }
+
+        ArrayList<Cards> shuffledDeck = new ArrayList<>();
+
+        while (drawCardsPile.size() > 0) {
+            int index = (int) (Math.random() * drawCardsPile.size());
+            shuffledDeck.add(drawCardsPile.remove(index));
+        }
+
+        System.out.println(shuffledDeck.toString());
 
      }
 

@@ -2,6 +2,8 @@ package org.example;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 public class Cards{
 
     private Hashtable<String, ArrayList<Integer>> cardsTypeCount;
@@ -10,8 +12,8 @@ public class Cards{
 
     public Cards(){
         cardsTypeCount = new Hashtable<String, ArrayList<Integer>>();
-        cardsTypeCount.put("Coffee Bean", [24,4,7,10,12],);
-        cardsTypeCount.put("Wax Bean", [22,4,7,9,11]);
+        cardsTypeCount.put("Coffee Bean", [24,4,7,10,12].asList());
+        cardsTypeCount.put("Wax Bean", [22,4,7,9,11].asList();
         cardsTypeCount.put("Blue Bean", [20,4,6,8,10]);
         cardsTypeCount.put("Chilli Bean", [18,3,6,8,9]);
         cardsTypeCount.put("Stink Bean", [16,3,5,7,8]);
