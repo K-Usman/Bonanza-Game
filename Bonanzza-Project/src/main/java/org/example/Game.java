@@ -6,14 +6,14 @@ import java.util.Scanner;
 public class Game {
      private Cards cards; //instance of the card class
      private int numberOfPlayers = 3;
-     private int deckSize;
+     public static final int deckSize = 157;
      private ArrayList<String> players;
      private int startingPlayer;
      private String activePlayer;
      private String winningPlayer;
      private int winnerScore;
-     private ArrayList<String> drawCardsPile;
-     public static final int deckSize = 157;
+     private ArrayList<Integer> drawCardsPile;
+    // public static final int deckSize = 157;
      public Game() {
          System.out.print("WLCOME TO THE BOHNANZA GAME!");
          numberOfPlayers =  countPlayers();
@@ -66,12 +66,10 @@ public class Game {
     }
 
     public void shuffle(){
-        ArrayList<Cards> drawCardsPile = new ArrayList<>(104);
-        for (int i = 0; i < deckSize; ++i) {
-            drawCardsPile.add(i);
-        }
 
-        ArrayList<Cards> shuffledDeck = new ArrayList<>();
+        for (int i = 0; i < deckSize; ++i) drawCardsPile.add(i);
+
+        ArrayList<Integer> shuffledDeck = new ArrayList<>();
 
         while (drawCardsPile.size() > 0) {
             int index = (int) (Math.random() * drawCardsPile.size());
