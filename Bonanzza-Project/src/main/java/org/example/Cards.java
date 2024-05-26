@@ -23,4 +23,5 @@ public class Cards{
         cardsTypeCount.put("Cocoa Bean", [4,0,2,3,4]);
         cardsTypeCount.put("Garden Bean", [3,0,2,3,0]);
     }
+
 }

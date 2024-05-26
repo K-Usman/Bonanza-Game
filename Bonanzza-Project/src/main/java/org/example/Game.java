@@ -22,6 +22,7 @@ public class Game {
             for (int i = 1; i <= numberOfPlayers; i++) {
                 players.add(new Player(i));
             }
+
             startingPlayer = selectStartingPlayer(players);
             distributeCards(numberOfPlayers);
      }

@@ -17,6 +17,7 @@ public class Player extends Game{
     }
     public int scoreCalculation(){
         return score;
+
     }
 
     public void drawCards(){
