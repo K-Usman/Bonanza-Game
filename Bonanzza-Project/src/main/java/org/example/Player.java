@@ -1,26 +1,43 @@
 package org.example;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Player extends Game{
-    private int numberOfFields;
-    //this will be provided by game class using distribute cards method
-    private List<String> cardsInHand;
-    private Map<String, Map<Integer, Integer>> cardsInFields;
-    private Map<String, Map<Integer, Integer>> goldCoinStack;
-    private List<String> turnedOverCards;
+public class Player {
+    private String name;
+    private List<String> hand;
+    private List<List<String>> fields;
+    private int coins;
 
-
-    public int scoreCalculation(){
-
+    public Player(String name) {
+        this.name = name;
+        this.hand = new ArrayList<>();
+        this.fields = new ArrayList<>();
+        this.coins = 0;
     }
 
-    public void drawCards(){
-
+    public String getName() {
+        return name;
     }
 
-    public void purchaseField(){
-
+    public List<String> getHand() {
+        return hand;
     }
 
+    public List<List<String>> getFields() {
+        return fields;
+    }
+
+    public void addCardToHand(String card) {
+        hand.add(card);
+    }
+
+    public void addField() {
+        fields.add(new ArrayList<>());
+    }
+
+    @Override
+    public String toString() {
+        return name + " - Hand: " + hand + ", Fields: " + fields;
+    }
 }
