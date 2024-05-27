@@ -17,7 +17,6 @@ public class Cards {
         addCards("Black-eyed Beans", 10);
         addCards("Red Beans", 8);
         addCards("Garden Beans", 6);
-        addCards("Bean Field Mats", 5);
     }
 
     private void addCards(String type, int count) {
