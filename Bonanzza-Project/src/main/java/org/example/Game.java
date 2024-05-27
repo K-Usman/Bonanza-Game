@@ -2,10 +2,11 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Game {
-    private Cards cards; // Instance of the Cards class
+    private Cards cards;
     private List<Player> players;
     private List<String> drawCardsPile;
     private Player activePlayer;
@@ -18,7 +19,6 @@ public class Game {
     }
 
     private void initializeGame() {
-        // Define player names
         String[] playerNames = {"Usman", "Pratiksha", "Surabhi", "Teresa"};
         for (String name : playerNames) {
             players.add(new Player(name));
@@ -32,6 +32,7 @@ public class Game {
         drawCards(activePlayer, 2);  // Drawing 2 cards as an example
         displayStateAfterDrawing();
         promptTrade();
+        promptHarvest(); // Prompt to harvest fields at the end
     }
 
     public void shuffle() {
@@ -40,11 +41,9 @@ public class Game {
 
     public void distributeCards() {
         for (Player player : players) {
-            // Give each player 5 cards
             for (int i = 0; i < 5; i++) {
                 player.addCardToHand(cards.drawCard());
             }
-            // Give each player 3 fields
             for (int i = 0; i < 3; i++) {
                 player.addField();
             }
@@ -76,7 +75,6 @@ public class Game {
         List<String> hand = player.getHand();
         List<List<String>> fields = player.getFields();
 
-        // Plant the first three cards from the hand
         for (int i = 0; i < 3 && i < hand.size(); i++) {
             String card = hand.get(i);
             boolean planted = false;
@@ -95,7 +93,6 @@ public class Game {
             }
         }
 
-        // Remove planted cards from the hand
         hand.subList(0, Math.min(3, hand.size())).clear();
     }
 
@@ -161,6 +158,63 @@ public class Game {
             System.out.println("Trade failed. One or both players do not have the required beans.");
         }
         displayFinalState();  // Display state after trade
+    }
+
+    public void promptHarvest() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Do you want to harvest any fields? (yes/no)");
+        String response = scanner.nextLine();
+
+        if (response.equalsIgnoreCase("yes")) {
+            System.out.println("Enter the fields to harvest (1, 2, and/or 3), separated by commas:");
+            String fieldsInput = scanner.nextLine();
+            String[] fieldIndices = fieldsInput.split(",");
+            for (String fieldIndex : fieldIndices) {
+                try {
+                    int index = Integer.parseInt(fieldIndex.trim()) - 1;
+                    harvestField(activePlayer, index);
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                    System.out.println("Invalid field index: " + fieldIndex);
+                }
+            }
+        }
+    }
+
+    public void harvestField(Player player, int fieldIndex) {
+        if (fieldIndex < 0 || fieldIndex >= player.getFields().size()) {
+            System.out.println("Invalid field index.");
+            return;
+        }
+
+        List<String> field = player.getFields().get(fieldIndex);
+        if (field.isEmpty()) {
+            System.out.println("Field " + (fieldIndex + 1) + " is empty, nothing to harvest.");
+            return;
+        }
+
+        String beanType = field.get(0);
+        int beanCount = field.size();
+        int coinsEarned = calculateEarnings(beanType, beanCount);
+
+        player.addCoins(coinsEarned);
+        player.addHarvestedBeans(new ArrayList<>(field));
+        field.clear();
+
+        System.out.println(player.getName() + " harvested " + beanCount + " " + beanType + " and earned " + coinsEarned + " coins.");
+        displayFinalState(); // Update the display after harvesting
+    }
+
+    private int calculateEarnings(String beanType, int beanCount) {
+        Map<Integer, Integer> earningsMap = cards.getEarnings().get(beanType);
+        int coins = 0;
+
+        for (Map.Entry<Integer, Integer> entry : earningsMap.entrySet()) {
+            if (beanCount >= entry.getKey()) {
+                coins = entry.getValue();
+            }
+        }
+
+        return coins;
     }
 
     public void displayInitialState() {

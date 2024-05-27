@@ -56,6 +56,10 @@ public class Player {
         harvestedBeans.addAll(beans);
     }
 
+    public void addCoins(int coins) {
+        this.coins += coins;
+    }
+
     @Override
     public String toString() {
         return name + " - Hand: " + hand + ", Fields: " + fields + ", Coins: " + coins + ", Traded Beans: " + tradedBeans + ", Harvested Beans: " + harvestedBeans;
