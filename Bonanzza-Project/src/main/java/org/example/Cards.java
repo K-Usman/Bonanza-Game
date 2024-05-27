@@ -1,5 +1,8 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -28,4 +31,19 @@ public class Cards{
 
     }
 
+}
+    public void shuffle() {
+        Collections.shuffle(deck);
+    }
+
+    public String drawCard() {
+        if (!deck.isEmpty()) {
+            return deck.remove(0);
+        }
+        return null;
+    }
+
+    public List<String> getDeck() {
+        return deck;
+    }
 }
