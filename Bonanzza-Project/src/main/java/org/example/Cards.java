@@ -11,8 +11,9 @@ public class Cards{
     private int numberOfTypes = 12;
 
     public Cards(){
-        cardsTypeCount = new Hashtable<String, ArrayList<Integer>>();
-//        cardsTypeCount.put("Coffee Bean", [24,4,7,10,12].asList());
+//        cardsTypeCount = new Hashtable<String, Arrays <Integer>>();
+         // new() Arrays arrayList1 = [24,4,7,10,12] ;
+          cardsTypeCount.put("Coffee Bean", 24);
 //        cardsTypeCount.put("Wax Bean", [22,4,7,9,11].asList();
 //        cardsTypeCount.put("Blue Bean", [20,4,6,8,10]);
 //        cardsTypeCount.put("Chilli Bean", [18,3,6,8,9]);

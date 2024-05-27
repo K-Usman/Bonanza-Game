@@ -74,6 +74,7 @@ public class Game {
         while (drawCardsPile.size() > 0) {
             int index = (int) (Math.random() * drawCardsPile.size());
             shuffledDeck.add(drawCardsPile.remove(index));
+
         }
 
         System.out.println(shuffledDeck.toString());
