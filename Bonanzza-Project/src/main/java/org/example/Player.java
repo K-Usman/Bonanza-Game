@@ -6,7 +6,8 @@ import java.util.List;
 public class Player {
     private String name;
     private List<String> hand;
-    private List<List<String>> fields;
+//    private List<List<String>> fields;
+    List<beanField> fields = new ArrayList<>();
     private int coins;
 
     public Player(String name) {
@@ -15,7 +16,9 @@ public class Player {
         this.fields = new ArrayList<>();
         this.coins = 0;
     }
-
+    public Player getPlayer(String name) {
+        return new Player(name);
+    }
     public String getName() {
         return name;
     }

@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Game {
     private Cards cards; // Instance of the Cards class
@@ -25,6 +26,11 @@ public class Game {
         shuffle();
         distributeCards();
         displayInitialState();
+        // Active player
+        Player activePlayer = selectActivePlayer(players);
+        //activePlayer.plant();
+        //System.out.println(activePlayer);
+        activePlayer
     }
 
     public void shuffle() {
@@ -55,7 +61,23 @@ public class Game {
         }
         System.out.println("Draw Pile: " + drawCardsPile);
     }
+    // Selecting the starting player
+    public Player selectActivePlayer(List<Player> players ){
+        Random rndm = new Random();
+        int index = rndm.nextInt(players.size());
+        String name = players.get(index).getName() ;
+        System.out.println("The Active Player is player : " + name );
+        Player activePlayer = players.get(index);
+        return activePlayer ;
 
+    }
+    public void identifyActivePlayer(){
+
+    }
+
+    public void decideWinningPlayer(){
+
+    }
     public static void main(String[] args) {
         new Game();
     }
