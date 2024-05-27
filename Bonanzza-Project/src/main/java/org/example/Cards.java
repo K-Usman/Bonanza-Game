@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class Cards {
     private List<String> deck;
-    private Map<String, Map<Integer, Integer>> earnings;
+    private Map<String, Map<Integer, Integer>> coins;
 
     public Cards() {
         deck = new ArrayList<>();
-        earnings = new HashMap<>();
+        coins = new HashMap<>();
         initializeDeck();
     }
 
@@ -25,7 +25,6 @@ public class Cards {
         addCards("Black-eyed Beans", 10, new int[]{2, 3, 5}, new int[]{1, 3, 5});
         addCards("Red Beans", 8, new int[]{2, 4, 6}, new int[]{1, 4, 7});
         addCards("Garden Beans", 6, new int[]{1, 2, 3}, new int[]{2, 3, 6});
-        addCards("Bean Field Mats", 5, new int[]{1}, new int[]{0});
     }
 
     private void addCards(String type, int count, int[] thresholds, int[] values) {
@@ -33,7 +32,7 @@ public class Cards {
         for (int i = 0; i < thresholds.length; i++) {
             earningsMap.put(thresholds[i], values[i]);
         }
-        earnings.put(type, earningsMap);
+        coins.put(type, earningsMap);
         for (int i = 0; i < count; i++) {
             deck.add(type);
         }
@@ -54,7 +53,7 @@ public class Cards {
         return deck;
     }
 
-    public Map<String, Map<Integer, Integer>> getEarnings() {
-        return earnings;
+    public Map<String, Map<Integer, Integer>> getCoins() {
+        return coins;
     }
 }

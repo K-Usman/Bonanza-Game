@@ -19,7 +19,7 @@ public class Game {
     }
 
     private void initializeGame() {
-        String[] playerNames = {"Usman", "Pratiksha", "Surabhi", "Teresa"};
+        String[] playerNames = {"Usman", "Pratiksha", "Surabhi"};
         for (String name : playerNames) {
             players.add(new Player(name));
         }
@@ -43,10 +43,10 @@ public class Game {
     public void takeTurn(Player player) {
         System.out.println("It's " + player.getName() + "'s turn.");
         plantBeans(player);
-        drawCards(player, 2);  // Drawing 2 cards as an example
+        drawCards(player, 2);  // Draw cards from draw pile
         displayStateAfterDrawing();
-        promptTrade();
-        promptHarvest(); // Prompt to harvest fields at the end of the turn
+        Trading();
+        Harvesting(); // Harvest fields
     }
 
     public void moveToNextPlayer() {
@@ -123,7 +123,7 @@ public class Game {
         }
     }
 
-    public void promptTrade() {
+    public void Trading() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to initiate a trade? (yes/no)");
         String response = scanner.nextLine();
@@ -180,7 +180,7 @@ public class Game {
         displayFinalState();  // Display state after trade
     }
 
-    public void promptHarvest() {
+    public void Harvesting() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to harvest any fields? (yes/no)");
         String response = scanner.nextLine();
@@ -214,7 +214,7 @@ public class Game {
 
         String beanType = field.get(0);
         int beanCount = field.size();
-        int coinsEarned = calculateEarnings(beanType, beanCount);
+        int coinsEarned = calculateCoins(beanType, beanCount);
 
         player.addCoins(coinsEarned);
         player.addHarvestedBeans(new ArrayList<>(field));
@@ -224,8 +224,8 @@ public class Game {
         displayFinalState(); // Update the display after harvesting
     }
 
-    private int calculateEarnings(String beanType, int beanCount) {
-        Map<Integer, Integer> earningsMap = cards.getEarnings().get(beanType);
+    private int calculateCoins(String beanType, int beanCount) {
+        Map<Integer, Integer> earningsMap = cards.getCoins().get(beanType);
         int coins = 0;
 
         for (Map.Entry<Integer, Integer> entry : earningsMap.entrySet()) {
