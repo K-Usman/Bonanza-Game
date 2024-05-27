@@ -40,7 +40,7 @@ public class Game {
     }
     public void distributeCards(int numberOfPlayers){
         Cards cards = new Cards();
-        shuffle();
+        shuffle(154, drawCardsPile);
          for (int i = 0; i < numberOfPlayers; i++) {
 
         }
@@ -65,15 +65,15 @@ public class Game {
 
     }
 
-    public void shuffle(){
+    public void shuffle(int deckSize, ArrayList<Integer> pile){
 
-        for (int i = 0; i < deckSize; ++i) drawCardsPile.add(i);
+        for (int i = 0; i < deckSize; ++i) pile.add(i);
 
         ArrayList<Integer> shuffledDeck = new ArrayList<>();
 
-        while (drawCardsPile.size() > 0) {
-            int index = (int) (Math.random() * drawCardsPile.size());
-            shuffledDeck.add(drawCardsPile.remove(index));
+        while (pile.size() > 0) {
+            int index = (int) (Math.random() * pile.size());
+            shuffledDeck.add(pile.remove(index));
 
         }
 
