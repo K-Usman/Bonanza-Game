@@ -28,11 +28,31 @@ public class Game {
         distributeCards();
         selectStartingPlayer();
         displayInitialState();
-        plantBeans(activePlayer);
-        drawCards(activePlayer, 2);  // Drawing 2 cards as an example
+
+        // Main game loop
+        while (!drawCardsPile.isEmpty()) {
+            takeTurn(activePlayer);
+            moveToNextPlayer();
+        }
+
+        // Game ends when draw pile is empty
+        System.out.println("The draw pile is empty. The game is over.");
+        displayFinalState();
+    }
+
+    public void takeTurn(Player player) {
+        System.out.println("It's " + player.getName() + "'s turn.");
+        plantBeans(player);
+        drawCards(player, 2);  // Drawing 2 cards as an example
         displayStateAfterDrawing();
         promptTrade();
-        promptHarvest(); // Prompt to harvest fields at the end
+        promptHarvest(); // Prompt to harvest fields at the end of the turn
+    }
+
+    public void moveToNextPlayer() {
+        int currentIndex = players.indexOf(activePlayer);
+        int nextIndex = (currentIndex + 1) % players.size();
+        activePlayer = players.get(nextIndex);
     }
 
     public void shuffle() {
