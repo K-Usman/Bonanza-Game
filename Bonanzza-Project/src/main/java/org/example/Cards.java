@@ -17,14 +17,14 @@ public class Cards {
     }
 
     private void initializeDeck() {
-        addCards("Blue Beans", 20, new int[]{2, 3, 5}, new int[]{3, 5, 10});
-        addCards("Chili Beans", 18, new int[]{2, 4, 6}, new int[]{3, 6, 8});
-        addCards("Stink Beans", 16, new int[]{3, 5, 7}, new int[]{2, 4, 7});
-        addCards("Green Beans", 14, new int[]{1, 2, 3}, new int[]{1, 3, 5});
-        addCards("Soy Beans", 12, new int[]{2, 3, 4}, new int[]{2, 4, 6});
-        addCards("Black-eyed Beans", 10, new int[]{2, 3, 5}, new int[]{1, 3, 5});
-        addCards("Red Beans", 8, new int[]{2, 4, 6}, new int[]{1, 4, 7});
-        addCards("Garden Beans", 6, new int[]{1, 2, 3}, new int[]{2, 3, 6});
+        addCards("Blue Beans", 5, new int[]{2, 3, 5}, new int[]{3, 5, 10});
+        addCards("Chili Beans", 4, new int[]{2, 4, 6}, new int[]{3, 6, 8});
+        addCards("Stink Beans", 3, new int[]{3, 5, 7}, new int[]{2, 4, 7});
+        addCards("Green Beans", 6, new int[]{1, 2, 3}, new int[]{1, 3, 5});
+        addCards("Soy Beans", 4, new int[]{2, 3, 4}, new int[]{2, 4, 6});
+        addCards("Black-eyed Beans", 5, new int[]{2, 3, 5}, new int[]{1, 3, 5});
+        addCards("Red Beans", 6, new int[]{2, 4, 6}, new int[]{1, 4, 7});
+        addCards("Garden Beans", 4, new int[]{1, 2, 3}, new int[]{2, 3, 6});
     }
 
     private void addCards(String type, int count, int[] thresholds, int[] values) {
