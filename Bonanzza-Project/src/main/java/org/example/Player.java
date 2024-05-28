@@ -60,6 +60,10 @@ public class Player {
         this.coins += coins;
     }
 
+    public int getCoins() {
+        return coins;
+    }
+
     @Override
     public String toString() {
         return name + " - Hand: " + hand + ", Fields: " + fields + ", Coins: " + coins + ", Traded Beans: " + tradedBeans + ", Harvested Beans: " + harvestedBeans;

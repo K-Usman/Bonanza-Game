@@ -29,7 +29,7 @@ public class Game {
         selectStartingPlayer();
         displayInitialState();
 
-        // Main game loop
+
         while (!drawCardsPile.isEmpty()) {
             takeTurn(activePlayer);
             moveToNextPlayer();
@@ -37,16 +37,17 @@ public class Game {
 
         // Game ends when draw pile is empty
         System.out.println("The draw pile is empty. The game is over.");
+        calculateFinalCoins();
         displayFinalState();
     }
 
     public void takeTurn(Player player) {
         System.out.println("It's " + player.getName() + "'s turn.");
         plantBeans(player);
-        drawCards(player, 2);  // Draw cards from draw pile
+        drawCards(player, 2);
         displayStateAfterDrawing();
         Trading();
-        Harvesting(); // Harvest fields
+        Harvesting();
     }
 
     public void moveToNextPlayer() {
@@ -212,16 +213,28 @@ public class Game {
             return;
         }
 
-        String beanType = field.get(0);
-        int beanCount = field.size();
-        int coinsEarned = calculateCoins(beanType, beanCount);
-
-        player.addCoins(coinsEarned);
         player.addHarvestedBeans(new ArrayList<>(field));
         field.clear();
+    }
 
-        System.out.println(player.getName() + " harvested " + beanCount + " " + beanType + " and earned " + coinsEarned + " coins.");
-        displayFinalState(); // Update the display after harvesting
+    public void calculateFinalCoins() {
+        for (Player player : players) {
+            for (List<String> field : player.getFields()) {
+                if (!field.isEmpty()) {
+                    String beanType = field.get(0);
+                    int beanCount = field.size();
+                    int coinsEarned = calculateCoins(beanType, beanCount);
+                    player.addCoins(coinsEarned);
+                    player.addHarvestedBeans(new ArrayList<>(field));
+                    field.clear();
+                }
+            }
+        }
+
+        System.out.println("Final coin count:");
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getCoins() + " coins");
+        }
     }
 
     private int calculateCoins(String beanType, int beanCount) {
@@ -242,7 +255,6 @@ public class Game {
         for (Player player : players) {
             System.out.println(player);
         }
-        System.out.println("Draw Pile: " + drawCardsPile);
     }
 
     public void displayStateAfterDrawing() {
@@ -250,7 +262,6 @@ public class Game {
         for (Player player : players) {
             System.out.println(player);
         }
-        System.out.println("Draw Pile: " + drawCardsPile);
     }
 
     public void displayFinalState() {
@@ -258,7 +269,6 @@ public class Game {
         for (Player player : players) {
             System.out.println(player);
         }
-        System.out.println("Draw Pile: " + drawCardsPile);
     }
 
     public static void main(String[] args) {
