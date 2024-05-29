@@ -126,11 +126,11 @@ public class Game {
 
     public void Trading() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to initiate a trade? (yes/no)");
+        System.out.println("Do you want to initiate a trade?");
         String response = scanner.nextLine();
 
         if (response.equalsIgnoreCase("yes")) {
-            System.out.println("Enter the trade you want to make (format: OfferedBean:RequestedBean):");
+            System.out.println("Enter the beans you want to exchange:");
             String tradeOffer = scanner.nextLine();
             String[] tradeParts = tradeOffer.split(":");
 
@@ -183,11 +183,11 @@ public class Game {
 
     public void Harvesting() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to harvest any fields? (yes/no)");
+        System.out.println("Do you want to harvest any fields? ");
         String response = scanner.nextLine();
 
         if (response.equalsIgnoreCase("yes")) {
-            System.out.println("Enter the fields to harvest (1, 2, and/or 3), separated by commas:");
+            System.out.println("Enter the fields to harvest (1, 2 or 3?)");
             String fieldsInput = scanner.nextLine();
             String[] fieldIndices = fieldsInput.split(",");
             for (String fieldIndex : fieldIndices) {
@@ -271,7 +271,5 @@ public class Game {
         }
     }
 
-    public static void main(String[] args) {
-        new Game();
-    }
+
 }
