@@ -1,0 +1,483 @@
+Index: Bonanzza-Project/src/Player.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/Player.java b/Bonanzza-Project/src/Player.java
+new file mode 100644
+--- /dev/null	(date 1718656250663)
++++ b/Bonanzza-Project/src/Player.java	(date 1718656250663)
+@@ -0,0 +1,71 @@
++package main;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public class Player {
++    private String name;
++    private List<String> hand;
++    private List<List<String>> fields;
++    private int coins;
++    private List<String> tradedBeans;
++    private List<String> harvestedBeans;
++
++    public Player(String name) {
++        this.name = name;
++        this.hand = new ArrayList<>();
++        this.fields = new ArrayList<>();
++        this.coins = 0;
++        this.tradedBeans = new ArrayList<>();
++        this.harvestedBeans = new ArrayList<>();
++    }
++
++    public String getName() {
++        return name;
++    }
++
++    public List<String> getHand() {
++        return hand;
++    }
++
++    public void addCardToHand(String card) {
++        hand.add(card);
++    }
++
++    public List<List<String>> getFields() {
++        return fields;
++    }
++
++    public void addField() {
++        fields.add(new ArrayList<>());
++    }
++
++    public List<String> getTradedBeans() {
++        return tradedBeans;
++    }
++
++    public void addTradedBean(String bean) {
++        tradedBeans.add(bean);
++    }
++
++    public List<String> getHarvestedBeans() {
++        return harvestedBeans;
++    }
++
++    public void addHarvestedBeans(List<String> beans) {
++        harvestedBeans.addAll(beans);
++    }
++
++    public void addCoins(int coins) {
++        this.coins += coins;
++    }
++
++    public int getCoins() {
++        return coins;
++    }
++
++    @Override
++    public String toString() {
++        return name + " - Hand: " + hand + ", Fields: " + fields + ", Coins: " + coins + ", Traded Beans: " + tradedBeans + ", Harvested Beans: " + harvestedBeans;
++    }
++}
+\ No newline at end of file
+Index: Bonanzza-Project/src/CardManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/CardManager.java b/Bonanzza-Project/src/CardManager.java
+new file mode 100644
+--- /dev/null	(date 1718656250660)
++++ b/Bonanzza-Project/src/CardManager.java	(date 1718656250660)
+@@ -0,0 +1,81 @@
++package main;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++
++public class CardManager {
++    private List<String> deck;
++    private List<String> drawCardsPile;
++    private Map<String, Map<Integer, Integer>> coins;
++
++    public CardManager() {
++        deck = new ArrayList<>();
++        drawCardsPile = new ArrayList<>();
++        coins = new HashMap<>();
++        initializeDeck();
++    }
++
++    private void initializeDeck() {
++        addCards("Blue Beans", 2, new int[]{2, 3, 5}, new int[]{3, 5, 10});
++        addCards("Chili Beans", 3, new int[]{2, 4, 6}, new int[]{3, 6, 8});
++        addCards("Stink Beans", 3, new int[]{3, 5, 7}, new int[]{2, 4, 7});
++        addCards("Green Beans", 3, new int[]{1, 2, 3}, new int[]{1, 3, 5});
++        addCards("Soy Beans", 2, new int[]{2, 3, 4}, new int[]{2, 4, 6});
++        addCards("Black-eyed Beans", 3, new int[]{2, 3, 5}, new int[]{1, 3, 5});
++        addCards("Red Beans", 2, new int[]{2, 4, 6}, new int[]{1, 4, 7});
++        addCards("Garden Beans", 5, new int[]{1, 2, 3}, new int[]{2, 3, 6});
++    }
++
++    private void addCards(String type, int count, int[] thresholds, int[] values) {
++        Map<Integer, Integer> earningsMap = new HashMap<>();
++        for (int i = 0; i < thresholds.length; i++) {
++            earningsMap.put(thresholds[i], values[i]);
++        }
++        coins.put(type, earningsMap);
++        for (int i = 0; i < count; i++) {
++            deck.add(type);
++        }
++    }
++
++    public void shuffle() {
++        Collections.shuffle(deck);
++    }
++
++    public String drawCard() {
++        if (!deck.isEmpty()) {
++            return deck.remove(0);
++        }
++        return null;
++    }
++
++    public void addCardsToDrawPile() {
++        drawCardsPile.addAll(deck);
++    }
++
++    public void drawCards(Player player, int numberOfCards) {
++        for (int i = 0; i < numberOfCards && !drawCardsPile.isEmpty(); i++) {
++            String card = drawCardsPile.remove(0);
++            player.addCardToHand(card);
++        }
++    }
++
++    public boolean isDrawPileEmpty() {
++        return drawCardsPile.isEmpty();
++    }
++
++    public int calculateCoins(String beanType, int beanCount) {
++        Map<Integer, Integer> earningsMap = coins.get(beanType);
++        int coins = 0;
++
++        for (Map.Entry<Integer, Integer> entry : earningsMap.entrySet()) {
++            if (beanCount >= entry.getKey()) {
++                coins = entry.getValue();
++            }
++        }
++
++        return coins;
++    }
++}
+\ No newline at end of file
+Index: Bonanzza-Project/src/HarvestManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/HarvestManager.java b/Bonanzza-Project/src/HarvestManager.java
+new file mode 100644
+--- /dev/null	(date 1718656250661)
++++ b/Bonanzza-Project/src/HarvestManager.java	(date 1718656250661)
+@@ -0,0 +1,44 @@
++package main;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Scanner;
++
++public class HarvestManager {
++
++    public void promptHarvest(Player player) {
++        Scanner scanner = new Scanner(System.in);
++        System.out.println("Do you want to harvest any fields? ");
++        String response = scanner.nextLine();
++
++        if (response.equalsIgnoreCase("yes")) {
++            System.out.println("Enter the fields to harvest (1, 2 or 3?)");
++            String fieldsInput = scanner.nextLine();
++            String[] fieldIndices = fieldsInput.split(",");
++            for (String fieldIndex : fieldIndices) {
++                try {
++                    int index = Integer.parseInt(fieldIndex.trim()) - 1;
++                    harvestField(player, index);
++                } catch (NumberFormatException | IndexOutOfBoundsException e) {
++                    System.out.println("Invalid field index: " + fieldIndex);
++                }
++            }
++        }
++    }
++
++    private void harvestField(Player player, int fieldIndex) {
++        if (fieldIndex < 0 || fieldIndex >= player.getFields().size()) {
++            System.out.println("Invalid field index.");
++            return;
++        }
++
++        List<String> field = player.getFields().get(fieldIndex);
++        if (field.isEmpty()) {
++            System.out.println("Field " + (fieldIndex + 1) + " is empty, nothing to harvest.");
++            return;
++        }
++
++        player.addHarvestedBeans(new ArrayList<>(field));
++        field.clear();
++    }
++}
+\ No newline at end of file
+Index: Bonanzza-Project/src/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/Main.java b/Bonanzza-Project/src/Main.java
+new file mode 100644
+--- /dev/null	(date 1718656250662)
++++ b/Bonanzza-Project/src/Main.java	(date 1718656250662)
+@@ -0,0 +1,7 @@
++
++package main;
++public class Main {
++    public static void main(String[] args) {
++        new Game();
++    }
++}
+\ No newline at end of file
+Index: Bonanzza-Project/src/TradeManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/TradeManager.java b/Bonanzza-Project/src/TradeManager.java
+new file mode 100644
+--- /dev/null	(date 1718656250663)
++++ b/Bonanzza-Project/src/TradeManager.java	(date 1718656250663)
+@@ -0,0 +1,63 @@
++package main;
++
++import java.util.List;
++import java.util.Scanner;
++
++public class TradeManager {
++
++    public void initiateTrade(Player activePlayer, List<Player> players) {
++        Scanner scanner = new Scanner(System.in);
++        System.out.println("Do you want to initiate a trade?");
++        String response = scanner.nextLine();
++
++        if (response.equalsIgnoreCase("yes")) {
++            System.out.println("Enter the beans you want to exchange:");
++            String tradeOffer = scanner.nextLine();
++            String[] tradeParts = tradeOffer.split(":");
++
++            if (tradeParts.length == 2) {
++                String offeredBean = tradeParts[0].trim();
++                String requestedBean = tradeParts[1].trim();
++                executeTrade(activePlayer, players, offeredBean, requestedBean);
++            } else {
++                System.out.println("Invalid trade format. Trade should be in the format OfferedBean:RequestedBean.");
++            }
++        }
++    }
++
++    private void executeTrade(Player activePlayer, List<Player> players, String offeredBean, String requestedBean) {
++        Scanner scanner = new Scanner(System.in);
++        System.out.println("Who wants to trade with " + activePlayer.getName() + "?");
++        String responderName = scanner.nextLine();
++
++        Player responder = null;
++        for (Player player : players) {
++            if (player.getName().equalsIgnoreCase(responderName)) {
++                responder = player;
++                break;
++            }
++        }
++
++        if (responder != null && !responder.equals(activePlayer)) {
++            processTrade(activePlayer, responder, offeredBean, requestedBean);
++        } else {
++            System.out.println("Invalid player selected for trade or player is the same as active player.");
++        }
++    }
++
++    private void processTrade(Player initiator, Player responder, String offeredBean, String requestedBean) {
++        if (initiator.getHand().contains(offeredBean) && responder.getHand().contains(requestedBean)) {
++            initiator.getHand().remove(offeredBean);
++            responder.getHand().remove(requestedBean);
++            initiator.getHand().add(requestedBean);
++            responder.getHand().add(offeredBean);
++
++            initiator.addTradedBean(requestedBean);
++            responder.addTradedBean(offeredBean);
++
++            System.out.println("Trade successful!");
++        } else {
++            System.out.println("Trade failed. One or both players do not have the required beans.");
++        }
++    }
++}
+\ No newline at end of file
+Index: Bonanzza-Project/src/Game.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/Game.java b/Bonanzza-Project/src/Game.java
+new file mode 100644
+--- /dev/null	(date 1718656250661)
++++ b/Bonanzza-Project/src/Game.java	(date 1718656250661)
+@@ -0,0 +1,151 @@
++package main;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Scanner;
++
++public class Game {
++    private CardManager cardManager;
++    private TradeManager tradeManager;
++    private HarvestManager harvestManager;
++    private List<Player> players;
++    private Player activePlayer;
++
++    public Game() {
++        cardManager = new CardManager();
++        tradeManager = new TradeManager();
++        harvestManager = new HarvestManager();
++        players = new ArrayList<>();
++        initializeGame();
++    }
++
++    private void initializeGame() {
++        String[] playerNames = {"Usman", "Pratiksha", "Surabhi"};
++        for (String name : playerNames) {
++            players.add(new Player(name));
++        }
++
++        cardManager.shuffle();
++        distributeCards();
++        selectStartingPlayer();
++        displayInitialState();
++
++        while (!cardManager.isDrawPileEmpty()) {
++            takeTurn(activePlayer);
++            moveToNextPlayer();
++        }
++
++        System.out.println("The draw pile is empty. The game is over.");
++        calculateFinalCoins();
++        displayFinalState();
++    }
++
++    public void takeTurn(Player player) {
++        System.out.println("It's " + player.getName() + "'s turn.");
++        plantBeans(player);
++        cardManager.drawCards(player, 2);
++        displayStateAfterDrawing();
++        tradeManager.initiateTrade(player, players);
++        harvestManager.promptHarvest(player);
++    }
++
++    public void moveToNextPlayer() {
++        int currentIndex = players.indexOf(activePlayer);
++        int nextIndex = (currentIndex + 1) % players.size();
++        activePlayer = players.get(nextIndex);
++    }
++
++    public void distributeCards() {
++        for (Player player : players) {
++            for (int i = 0; i < 5; i++) {
++                player.addCardToHand(cardManager.drawCard());
++            }
++            for (int i = 0; i < 3; i++) {
++                player.addField();
++            }
++        }
++        cardManager.addCardsToDrawPile();
++    }
++
++    public void selectStartingPlayer() {
++        Scanner scanner = new Scanner(System.in);
++        System.out.println("Select starting player from: ");
++        for (Player player : players) {
++            System.out.println(player.getName());
++        }
++        String selectedName = scanner.nextLine();
++        for (Player player : players) {
++            if (player.getName().equalsIgnoreCase(selectedName)) {
++                activePlayer = player;
++                break;
++            }
++        }
++        System.out.println("Starting player: " + activePlayer.getName());
++    }
++
++    public void plantBeans(Player player) {
++        List<String> hand = player.getHand();
++        List<List<String>> fields = player.getFields();
++
++        for (int i = 0; i < 3 && i < hand.size(); i++) {
++            String card = hand.get(i);
++            boolean planted = false;
++
++            for (List<String> field : fields) {
++                if (field.isEmpty() || field.get(0).equals(card)) {
++                    field.add(card);
++                    planted = true;
++                    break;
++                }
++            }
++
++            if (!planted) {
++                System.out.println("Cannot plant " + card + " due to planting rules.");
++                break;
++            }
++        }
++
++        hand.subList(0, Math.min(3, hand.size())).clear();
++    }
++
++    public void calculateFinalCoins() {
++        for (Player player : players) {
++            for (List<String> field : player.getFields()) {
++                if (!field.isEmpty()) {
++                    String beanType = field.get(0);
++                    int beanCount = field.size();
++                    int coinsEarned = cardManager.calculateCoins(beanType, beanCount);
++                    player.addCoins(coinsEarned);
++                    player.addHarvestedBeans(new ArrayList<>(field));
++                    field.clear();
++                }
++            }
++        }
++
++        System.out.println("Final coin count:");
++        for (Player player : players) {
++            System.out.println(player.getName() + ": " + player.getCoins() + " coins");
++        }
++    }
++
++    public void displayInitialState() {
++        System.out.println("Initial State:");
++        for (Player player : players) {
++            System.out.println(player);
++        }
++    }
++
++    public void displayStateAfterDrawing() {
++        System.out.println("State After Planting and Drawing:");
++        for (Player player : players) {
++            System.out.println(player);
++        }
++    }
++
++    public void displayFinalState() {
++        System.out.println("Final State After Planting, Drawing, and Trading:");
++        for (Player player : players) {
++            System.out.println(player);
++        }
++    }
++}
+\ No newline at end of file

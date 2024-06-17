@@ -1,0 +1,83 @@
+Index: Bonanzza-Project/src/main/java/org/example/Game.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.example;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Map;\r\nimport java.util.Scanner;\r\n\r\npublic class Game {\r\n    private Cards cards;\r\n    private List<Player> players;\r\n    private List<String> drawCardsPile;\r\n    private Player activePlayer;\r\n\r\n    public Game() {\r\n        cards = new Cards();\r\n        players = new ArrayList<>();\r\n        drawCardsPile = new ArrayList<>();\r\n        initializeGame();\r\n    }\r\n\r\n    private void initializeGame() {\r\n        String[] playerNames = {\"Usman\", \"Pratiksha\", \"Surabhi\", \"Teresa\"};\r\n        for (String name : playerNames) {\r\n            players.add(new Player(name));\r\n        }\r\n\r\n        shuffle();\r\n        distributeCards();\r\n        selectStartingPlayer();\r\n        displayInitialState();\r\n\r\n        // Main game loop\r\n        while (!drawCardsPile.isEmpty()) {\r\n            takeTurn(activePlayer);\r\n            moveToNextPlayer();\r\n        }\r\n\r\n        // Game ends when draw pile is empty\r\n        System.out.println(\"The draw pile is empty. The game is over.\");\r\n        displayFinalState();\r\n    }\r\n\r\n    public void takeTurn(Player player) {\r\n        System.out.println(\"It's \" + player.getName() + \"'s turn.\");\r\n        plantBeans(player);\r\n        drawCards(player, 2);  // Drawing 2 cards as an example\r\n        displayStateAfterDrawing();\r\n        promptTrade();\r\n        promptHarvest(); // Prompt to harvest fields at the end of the turn\r\n    }\r\n\r\n    public void moveToNextPlayer() {\r\n        int currentIndex = players.indexOf(activePlayer);\r\n        int nextIndex = (currentIndex + 1) % players.size();\r\n        activePlayer = players.get(nextIndex);\r\n    }\r\n\r\n    public void shuffle() {\r\n        cards.shuffle();\r\n    }\r\n\r\n    public void distributeCards() {\r\n        for (Player player : players) {\r\n            for (int i = 0; i < 5; i++) {\r\n                player.addCardToHand(cards.drawCard());\r\n            }\r\n            for (int i = 0; i < 3; i++) {\r\n                player.addField();\r\n            }\r\n        }\r\n        addCardsToDrawPile();\r\n    }\r\n\r\n    public void addCardsToDrawPile() {\r\n        drawCardsPile.addAll(cards.getDeck());\r\n    }\r\n\r\n    public void selectStartingPlayer() {\r\n        Scanner scanner = new Scanner(System.in);\r\n        System.out.println(\"Select starting player from: \");\r\n        for (Player player : players) {\r\n            System.out.println(player.getName());\r\n        }\r\n        String selectedName = scanner.nextLine();\r\n        for (Player player : players) {\r\n            if (player.getName().equalsIgnoreCase(selectedName)) {\r\n                activePlayer = player;\r\n                break;\r\n            }\r\n        }\r\n        System.out.println(\"Starting player: \" + activePlayer.getName());\r\n    }\r\n\r\n    public void plantBeans(Player player) {\r\n        List<String> hand = player.getHand();\r\n        List<List<String>> fields = player.getFields();\r\n\r\n        for (int i = 0; i < 3 && i < hand.size(); i++) {\r\n            String card = hand.get(i);\r\n            boolean planted = false;\r\n\r\n            for (List<String> field : fields) {\r\n                if (field.isEmpty() || field.get(0).equals(card)) {\r\n                    field.add(card);\r\n                    planted = true;\r\n                    break;\r\n                }\r\n            }\r\n\r\n            if (!planted) {\r\n                System.out.println(\"Cannot plant \" + card + \" due to planting rules.\");\r\n                break;\r\n            }\r\n        }\r\n\r\n        hand.subList(0, Math.min(3, hand.size())).clear();\r\n    }\r\n\r\n    public void drawCards(Player player, int numberOfCards) {\r\n        for (int i = 0; i < numberOfCards && !drawCardsPile.isEmpty(); i++) {\r\n            String card = drawCardsPile.remove(0);\r\n            player.addCardToHand(card);\r\n        }\r\n    }\r\n\r\n    public void promptTrade() {\r\n        Scanner scanner = new Scanner(System.in);\r\n        System.out.println(\"Do you want to initiate a trade? (yes/no)\");\r\n        String response = scanner.nextLine();\r\n\r\n        if (response.equalsIgnoreCase(\"yes\")) {\r\n            System.out.println(\"Enter the trade you want to make (format: OfferedBean:RequestedBean):\");\r\n            String tradeOffer = scanner.nextLine();\r\n            String[] tradeParts = tradeOffer.split(\":\");\r\n\r\n            if (tradeParts.length == 2) {\r\n                String offeredBean = tradeParts[0].trim();\r\n                String requestedBean = tradeParts[1].trim();\r\n                initiateTrade(offeredBean, requestedBean);\r\n            } else {\r\n                System.out.println(\"Invalid trade format. Trade should be in the format OfferedBean:RequestedBean.\");\r\n            }\r\n        }\r\n    }\r\n\r\n    public void initiateTrade(String offeredBean, String requestedBean) {\r\n        Scanner scanner = new Scanner(System.in);\r\n        System.out.println(\"Who wants to trade with \" + activePlayer.getName() + \"?\");\r\n        String responderName = scanner.nextLine();\r\n\r\n        Player responder = null;\r\n        for (Player player : players) {\r\n            if (player.getName().equalsIgnoreCase(responderName)) {\r\n                responder = player;\r\n                break;\r\n            }\r\n        }\r\n\r\n        if (responder != null && !responder.equals(activePlayer)) {\r\n            processTrade(activePlayer, responder, offeredBean, requestedBean);\r\n        } else {\r\n            System.out.println(\"Invalid player selected for trade or player is the same as active player.\");\r\n        }\r\n    }\r\n\r\n    public void processTrade(Player initiator, Player responder, String offeredBean, String requestedBean) {\r\n        if (initiator.getHand().contains(offeredBean) && responder.getHand().contains(requestedBean)) {\r\n            initiator.getHand().remove(offeredBean);\r\n            responder.getHand().remove(requestedBean);\r\n            initiator.getHand().add(requestedBean);\r\n            responder.getHand().add(offeredBean);\r\n\r\n            initiator.addTradedBean(requestedBean);\r\n            responder.addTradedBean(offeredBean);\r\n\r\n            System.out.println(\"Trade successful!\");\r\n        } else {\r\n            System.out.println(\"Trade failed. One or both players do not have the required beans.\");\r\n        }\r\n        displayFinalState();  // Display state after trade\r\n    }\r\n\r\n    public void promptHarvest() {\r\n        Scanner scanner = new Scanner(System.in);\r\n        System.out.println(\"Do you want to harvest any fields? (yes/no)\");\r\n        String response = scanner.nextLine();\r\n\r\n        if (response.equalsIgnoreCase(\"yes\")) {\r\n            System.out.println(\"Enter the fields to harvest (1, 2, and/or 3), separated by commas:\");\r\n            String fieldsInput = scanner.nextLine();\r\n            String[] fieldIndices = fieldsInput.split(\",\");\r\n            for (String fieldIndex : fieldIndices) {\r\n                try {\r\n                    int index = Integer.parseInt(fieldIndex.trim()) - 1;\r\n                    harvestField(activePlayer, index);\r\n                } catch (NumberFormatException | IndexOutOfBoundsException e) {\r\n                    System.out.println(\"Invalid field index: \" + fieldIndex);\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    public void harvestField(Player player, int fieldIndex) {\r\n        if (fieldIndex < 0 || fieldIndex >= player.getFields().size()) {\r\n            System.out.println(\"Invalid field index.\");\r\n            return;\r\n        }\r\n\r\n        List<String> field = player.getFields().get(fieldIndex);\r\n        if (field.isEmpty()) {\r\n            System.out.println(\"Field \" + (fieldIndex + 1) + \" is empty, nothing to harvest.\");\r\n            return;\r\n        }\r\n\r\n        String beanType = field.get(0);\r\n        int beanCount = field.size();\r\n        int coinsEarned = calculateEarnings(beanType, beanCount);\r\n\r\n        player.addCoins(coinsEarned);\r\n        player.addHarvestedBeans(new ArrayList<>(field));\r\n        field.clear();\r\n\r\n        System.out.println(player.getName() + \" harvested \" + beanCount + \" \" + beanType + \" and earned \" + coinsEarned + \" coins.\");\r\n        displayFinalState(); // Update the display after harvesting\r\n    }\r\n\r\n    private int calculateEarnings(String beanType, int beanCount) {\r\n        Map<Integer, Integer> earningsMap = cards.getEarnings().get(beanType);\r\n        int coins = 0;\r\n\r\n        for (Map.Entry<Integer, Integer> entry : earningsMap.entrySet()) {\r\n            if (beanCount >= entry.getKey()) {\r\n                coins = entry.getValue();\r\n            }\r\n        }\r\n\r\n        return coins;\r\n    }\r\n\r\n    public void displayInitialState() {\r\n        System.out.println(\"Initial State:\");\r\n        for (Player player : players) {\r\n            System.out.println(player);\r\n        }\r\n        System.out.println(\"Draw Pile: \" + drawCardsPile);\r\n    }\r\n\r\n    public void displayStateAfterDrawing() {\r\n        System.out.println(\"State After Planting and Drawing:\");\r\n        for (Player player : players) {\r\n            System.out.println(player);\r\n        }\r\n        System.out.println(\"Draw Pile: \" + drawCardsPile);\r\n    }\r\n\r\n    public void displayFinalState() {\r\n        System.out.println(\"Final State After Planting, Drawing, and Trading:\");\r\n        for (Player player : players) {\r\n            System.out.println(player);\r\n        }\r\n        System.out.println(\"Draw Pile: \" + drawCardsPile);\r\n    }\r\n\r\n    public static void main(String[] args) {\r\n        new Game();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/main/java/org/example/Game.java b/Bonanzza-Project/src/main/java/org/example/Game.java
+--- a/Bonanzza-Project/src/main/java/org/example/Game.java	(revision 662dab55c7130c040d75cb7ef6a54cce06bdb3ca)
++++ b/Bonanzza-Project/src/main/java/org/example/Game.java	(date 1718572241644)
+@@ -1,9 +1,6 @@
+ package org.example;
+ 
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.Map;
+-import java.util.Scanner;
++import java.util.*;
+ 
+ public class Game {
+     private Cards cards;
+@@ -24,7 +21,7 @@
+             players.add(new Player(name));
+         }
+ 
+-        shuffle();
++        shuffleCards();
+         distributeCards();
+         selectStartingPlayer();
+         displayInitialState();
+@@ -55,10 +52,11 @@
+         activePlayer = players.get(nextIndex);
+     }
+ 
+-    public void shuffle() {
++    public void shuffleCards() {
+         cards.shuffle();
+     }
+ 
++
+     public void distributeCards() {
+         for (Player player : players) {
+             for (int i = 0; i < 5; i++) {
+Index: Bonanzza-Project/src/main/java/org/example/Player.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.example;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class Player {\r\n    private String name;\r\n    private List<String> hand;\r\n    private List<List<String>> fields;\r\n    private int coins;\r\n    private List<String> tradedBeans;\r\n    private List<String> harvestedBeans;\r\n\r\n    public Player(String name) {\r\n        this.name = name;\r\n        this.hand = new ArrayList<>();\r\n        this.fields = new ArrayList<>();\r\n        this.coins = 0;\r\n        this.tradedBeans = new ArrayList<>();\r\n        this.harvestedBeans = new ArrayList<>();\r\n    }\r\n\r\n    public String getName() {\r\n        return name;\r\n    }\r\n\r\n    public List<String> getHand() {\r\n        return hand;\r\n    }\r\n\r\n    public void addCardToHand(String card) {\r\n        hand.add(card);\r\n    }\r\n\r\n    public List<List<String>> getFields() {\r\n        return fields;\r\n    }\r\n\r\n    public void addField() {\r\n        fields.add(new ArrayList<>());\r\n    }\r\n\r\n    public List<String> getTradedBeans() {\r\n        return tradedBeans;\r\n    }\r\n\r\n    public void addTradedBean(String bean) {\r\n        tradedBeans.add(bean);\r\n    }\r\n\r\n    public List<String> getHarvestedBeans() {\r\n        return harvestedBeans;\r\n    }\r\n\r\n    public void addHarvestedBeans(List<String> beans) {\r\n        harvestedBeans.addAll(beans);\r\n    }\r\n\r\n    public void addCoins(int coins) {\r\n        this.coins += coins;\r\n    }\r\n\r\n    @Override\r\n    public String toString() {\r\n        return name + \" - Hand: \" + hand + \", Fields: \" + fields + \", Coins: \" + coins + \", Traded Beans: \" + tradedBeans + \", Harvested Beans: \" + harvestedBeans;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/src/main/java/org/example/Player.java b/Bonanzza-Project/src/main/java/org/example/Player.java
+--- a/Bonanzza-Project/src/main/java/org/example/Player.java	(revision 662dab55c7130c040d75cb7ef6a54cce06bdb3ca)
++++ b/Bonanzza-Project/src/main/java/org/example/Player.java	(date 1718572241652)
+@@ -3,7 +3,7 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+-public class Player {
++public class Player  {
+     private String name;
+     private List<String> hand;
+     private List<List<String>> fields;
+Index: Bonanzza-Project/pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\r\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\r\n    <modelVersion>4.0.0</modelVersion>\r\n\r\n    <groupId>org.example</groupId>\r\n    <artifactId>Bonanzza-Project</artifactId>\r\n    <version>1.0-SNAPSHOT</version>\r\n\r\n    <properties>\r\n        <maven.compiler.source>17</maven.compiler.source>\r\n        <maven.compiler.target>17</maven.compiler.target>\r\n        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\r\n    </properties>\r\n\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Bonanzza-Project/pom.xml b/Bonanzza-Project/pom.xml
+--- a/Bonanzza-Project/pom.xml	(revision 662dab55c7130c040d75cb7ef6a54cce06bdb3ca)
++++ b/Bonanzza-Project/pom.xml	(date 1718572241795)
+@@ -9,8 +9,8 @@
+     <version>1.0-SNAPSHOT</version>
+ 
+     <properties>
+-        <maven.compiler.source>17</maven.compiler.source>
+-        <maven.compiler.target>17</maven.compiler.target>
++        <maven.compiler.source>18</maven.compiler.source>
++        <maven.compiler.target>18</maven.compiler.target>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+ 
