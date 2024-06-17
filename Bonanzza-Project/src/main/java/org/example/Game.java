@@ -247,8 +247,10 @@ public class Game {
         System.out.println("State After Planting and Drawing:");
         for (Player player : players) {
             System.out.println(player);
+
         }
         System.out.println("Draw Pile: " + drawCardsPile);
+
     }
 
     public void displayFinalState() {

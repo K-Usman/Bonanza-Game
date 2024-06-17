@@ -12,7 +12,7 @@ public class Player  {
     private List<String> tradedBeans;
     private List<String> harvestedBeans;
     List<Bean> beans;
-    List<Building> buildings;
+    List<String> buildings;
 //    int goldCoins;
     int bonusCoins;
 
@@ -24,7 +24,7 @@ public class Player  {
         this.tradedBeans = new ArrayList<>();
         this.harvestedBeans = new ArrayList<>();
 //        this.beans = new ArrayList<>();
-        this.buildings = new ArrayList<>();
+        this.buildings = new ArrayList<String>();
 //        this.goldCoins = 0;
         this.bonusCoins = 0;
     }
@@ -80,14 +80,15 @@ public class Player  {
         beans.add(bean);
     }
 
-    void buyBuilding(Building building, String beanType ) {
-
-        if (coins >= building.price) {
-            buildings.add(building);
-            coins -= building.price;
-            System.out.println(name + " bought " + building.type + " for " + building.price + " coins.");
+    void buyBuilding(List<String> buildingData, String beanType ) {
+        String buildingType = (String) buildingData.get(0);
+        int price = Integer.valueOf(buildingData.get(1));
+        if (coins >= price ) {
+            buildings.add(buildingType);
+            coins -= price;
+            System.out.println(name + " bought " + buildingType + " for " + price + " coins.");
         } else {
-            System.out.println(name + " does not have enough coins to buy " + building.type);
+            System.out.println(name + " does not have enough coins to buy " +buildingType);
         }
     }
 
