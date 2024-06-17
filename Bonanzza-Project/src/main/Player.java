@@ -3,8 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player  {
-//    public String coins;
+public class Player {
     private String name;
     private List<String> hand;
     private List<List<String>> fields;
@@ -64,11 +63,13 @@ public class Player  {
     public void addHarvestedBeans(List<String> beans) {
         harvestedBeans.addAll(beans);
     }
-    public int getCoins() {
-        return coins;
-    }
+
     public void addCoins(int coins) {
         this.coins += coins;
+    }
+
+    public int getCoins() {
+        return coins;
     }
 
     @Override
