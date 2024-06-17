@@ -1,49 +1,61 @@
 package org.example;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Game {
-    private Cards cards;
+    private CardManager cardManager;
+    private TradeManager tradeManager;
+    private HarvestManager harvestManager;
     private List<Player> players;
-    private List<String> drawCardsPile;
     private Player activePlayer;
 
     public Game() {
-        cards = new Cards();
+        cardManager = new CardManager();
+        tradeManager = new TradeManager();
+        harvestManager = new HarvestManager();
         players = new ArrayList<>();
-        drawCardsPile = new ArrayList<>();
-        initializeGame();
+        System.out.println("Please select Game Version: 1 for Classic Bohnanza /n 2 for High Bohn");
+        Scanner sc = new Scanner(System.in);
+        int gameVersion = sc.nextInt();
+        if(gameVersion == 1){
+            initializeGame();
+        }
+        else if (gameVersion == 2){
+            new HighBohn();
+
+        }
     }
 
     private void initializeGame() {
-        String[] playerNames = {"Usman", "Pratiksha", "Surabhi", "Teresa"};
+        String[] playerNames = {"Usman", "Pratiksha", "Surabhi"};
         for (String name : playerNames) {
             players.add(new Player(name));
         }
 
-        shuffleCards();
+        cardManager.shuffle();
         distributeCards();
         selectStartingPlayer();
         displayInitialState();
 
-        // Main game loop
-        while (!drawCardsPile.isEmpty()) {
+        while (!cardManager.isDrawPileEmpty()) {
             takeTurn(activePlayer);
             moveToNextPlayer();
         }
 
-        // Game ends when draw pile is empty
         System.out.println("The draw pile is empty. The game is over.");
+        calculateFinalCoins();
         displayFinalState();
     }
 
     public void takeTurn(Player player) {
         System.out.println("It's " + player.getName() + "'s turn.");
         plantBeans(player);
-        drawCards(player, 2);  // Drawing 2 cards as an example
+        cardManager.drawCards(player, 2);
         displayStateAfterDrawing();
-        promptTrade();
-        promptHarvest(); // Prompt to harvest fields at the end of the turn
+        tradeManager.initiateTrade(player, players);
+        harvestManager.promptHarvest(player);
     }
 
     public void moveToNextPlayer() {
@@ -52,25 +64,16 @@ public class Game {
         activePlayer = players.get(nextIndex);
     }
 
-    public void shuffleCards() {
-        cards.shuffle();
-    }
-
-
     public void distributeCards() {
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
-                player.addCardToHand(cards.drawCard());
+                player.addCardToHand(cardManager.drawCard());
             }
             for (int i = 0; i < 3; i++) {
                 player.addField();
             }
         }
-        addCardsToDrawPile();
-    }
-
-    public void addCardsToDrawPile() {
-        drawCardsPile.addAll(cards.getDeck());
+        cardManager.addCardsToDrawPile();
     }
 
     public void selectStartingPlayer() {
@@ -114,125 +117,24 @@ public class Game {
         hand.subList(0, Math.min(3, hand.size())).clear();
     }
 
-    public void drawCards(Player player, int numberOfCards) {
-        for (int i = 0; i < numberOfCards && !drawCardsPile.isEmpty(); i++) {
-            String card = drawCardsPile.remove(0);
-            player.addCardToHand(card);
-        }
-    }
-
-    public void promptTrade() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to initiate a trade? (yes/no)");
-        String response = scanner.nextLine();
-
-        if (response.equalsIgnoreCase("yes")) {
-            System.out.println("Enter the trade you want to make (format: OfferedBean:RequestedBean):");
-            String tradeOffer = scanner.nextLine();
-            String[] tradeParts = tradeOffer.split(":");
-
-            if (tradeParts.length == 2) {
-                String offeredBean = tradeParts[0].trim();
-                String requestedBean = tradeParts[1].trim();
-                initiateTrade(offeredBean, requestedBean);
-            } else {
-                System.out.println("Invalid trade format. Trade should be in the format OfferedBean:RequestedBean.");
-            }
-        }
-    }
-
-    public void initiateTrade(String offeredBean, String requestedBean) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Who wants to trade with " + activePlayer.getName() + "?");
-        String responderName = scanner.nextLine();
-
-        Player responder = null;
+    public void calculateFinalCoins() {
         for (Player player : players) {
-            if (player.getName().equalsIgnoreCase(responderName)) {
-                responder = player;
-                break;
-            }
-        }
-
-        if (responder != null && !responder.equals(activePlayer)) {
-            processTrade(activePlayer, responder, offeredBean, requestedBean);
-        } else {
-            System.out.println("Invalid player selected for trade or player is the same as active player.");
-        }
-    }
-
-    public void processTrade(Player initiator, Player responder, String offeredBean, String requestedBean) {
-        if (initiator.getHand().contains(offeredBean) && responder.getHand().contains(requestedBean)) {
-            initiator.getHand().remove(offeredBean);
-            responder.getHand().remove(requestedBean);
-            initiator.getHand().add(requestedBean);
-            responder.getHand().add(offeredBean);
-
-            initiator.addTradedBean(requestedBean);
-            responder.addTradedBean(offeredBean);
-
-            System.out.println("Trade successful!");
-        } else {
-            System.out.println("Trade failed. One or both players do not have the required beans.");
-        }
-        displayFinalState();  // Display state after trade
-    }
-
-    public void promptHarvest() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to harvest any fields? (yes/no)");
-        String response = scanner.nextLine();
-
-        if (response.equalsIgnoreCase("yes")) {
-            System.out.println("Enter the fields to harvest (1, 2, and/or 3), separated by commas:");
-            String fieldsInput = scanner.nextLine();
-            String[] fieldIndices = fieldsInput.split(",");
-            for (String fieldIndex : fieldIndices) {
-                try {
-                    int index = Integer.parseInt(fieldIndex.trim()) - 1;
-                    harvestField(activePlayer, index);
-                } catch (NumberFormatException | IndexOutOfBoundsException e) {
-                    System.out.println("Invalid field index: " + fieldIndex);
+            for (List<String> field : player.getFields()) {
+                if (!field.isEmpty()) {
+                    String beanType = field.get(0);
+                    int beanCount = field.size();
+                    int coinsEarned = cardManager.calculateCoins(beanType, beanCount);
+                    player.addCoins(coinsEarned);
+                    player.addHarvestedBeans(new ArrayList<>(field));
+                    field.clear();
                 }
             }
         }
-    }
 
-    public void harvestField(Player player, int fieldIndex) {
-        if (fieldIndex < 0 || fieldIndex >= player.getFields().size()) {
-            System.out.println("Invalid field index.");
-            return;
+        System.out.println("Final coin count:");
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getCoins() + " coins");
         }
-
-        List<String> field = player.getFields().get(fieldIndex);
-        if (field.isEmpty()) {
-            System.out.println("Field " + (fieldIndex + 1) + " is empty, nothing to harvest.");
-            return;
-        }
-
-        String beanType = field.get(0);
-        int beanCount = field.size();
-        int coinsEarned = calculateEarnings(beanType, beanCount);
-
-        player.addCoins(coinsEarned);
-        player.addHarvestedBeans(new ArrayList<>(field));
-        field.clear();
-
-        System.out.println(player.getName() + " harvested " + beanCount + " " + beanType + " and earned " + coinsEarned + " coins.");
-        displayFinalState(); // Update the display after harvesting
-    }
-
-    private int calculateEarnings(String beanType, int beanCount) {
-        Map<Integer, Integer> earningsMap = cards.getEarnings().get(beanType);
-        int coins = 0;
-
-        for (Map.Entry<Integer, Integer> entry : earningsMap.entrySet()) {
-            if (beanCount >= entry.getKey()) {
-                coins = entry.getValue();
-            }
-        }
-
-        return coins;
     }
 
     public void displayInitialState() {
@@ -240,17 +142,13 @@ public class Game {
         for (Player player : players) {
             System.out.println(player);
         }
-        System.out.println("Draw Pile: " + drawCardsPile);
     }
 
     public void displayStateAfterDrawing() {
         System.out.println("State After Planting and Drawing:");
         for (Player player : players) {
             System.out.println(player);
-
         }
-        System.out.println("Draw Pile: " + drawCardsPile);
-
     }
 
     public void displayFinalState() {
@@ -258,10 +156,5 @@ public class Game {
         for (Player player : players) {
             System.out.println(player);
         }
-        System.out.println("Draw Pile: " + drawCardsPile);
-    }
-
-    public static void main(String[] args) {
-        new Game();
     }
 }

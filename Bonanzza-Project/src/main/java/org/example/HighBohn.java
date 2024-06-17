@@ -30,22 +30,22 @@ class Bean {
 
 
 public class HighBohn extends Game {
-    Building building ;
-
-    private Cards cards;
-//    List<Bean> beanDeck;
-    List<Player> players;
+    private Building building ;
+    private CardManager cards;
+    private TradeManager tradeManager;
+    private HarvestManager harvestManager;
+    private List<Player> players;
+    private Player activePlayer;
     int round;
-    int totalRounds;
-    private Player activePlayer ;
 
-    public HighBohn(int numPlayers) {
-        System.out.println("Inside the Highbohn Constructor");
+
+    public HighBohn() {
+//        System.out.println("Inside the Highbohn Constructor");
         this.players = new ArrayList<Player>();
         this.building = new Building();
-        this.cards = new Cards();
+        this.cards = new CardManager();
         this.round = 0;
-        this.totalRounds = numPlayers < 5 ? 3 : 4;
+//        this.totalRounds = numPlayers < 5 ? 3 : 4;
         startGame();
     }
 
@@ -60,22 +60,19 @@ public class HighBohn extends Game {
 
     void startGame() {
 
-        String[] playerNames = {"Usman", "Pratiksha", "Surabhi", "Teresa"};
+        String[] playerNames = {"Usman", "Pratiksha", "Surabhi"};
         for (String player: playerNames) {
             players.add(new Player(player));
         }
-        shuffleCards();
+        cards.shuffle();
         distributeCards();
-        System.out.println("Start Game next is create  building deck");
-        //        shuffleBuilding();
         selectStartingPlayer();
         displayInitialState();
 
 
         // Main game loop
-        while (!cards.getDeck().isEmpty()) {
+        while (!cards.isDrawPileEmpty()) {
             takeTurn(activePlayer);
-
             moveToNextPlayer();
         }
 
@@ -89,12 +86,12 @@ public class HighBohn extends Game {
     public void takeTurn(Player player) {
         System.out.println("It's " + player.getName() + "'s turn.");
         plantBeans(player);
-        drawCards(player, 2);  // Drawing 2 cards as an example
+        cards.drawCards(player, 2);  // Drawing 2 cards as an example
         displayStateAfterDrawing();
 
         System.out.println(" Working here "+ building.buildingDeck);
-        promptTrade();
-        promptHarvest(); // Prompt to harvest fields at the end of the turn
+        tradeManager.initiateTrade(player,players );
+        harvestManager.promptHarvest(player); // Prompt to harvest fields at the end of the turn
         promptBuilding(player);
     }
 
@@ -145,11 +142,5 @@ public class HighBohn extends Game {
 
         }
     }
-    public static void main(String[] args) {
-        System.out.println("Inside Main ");
-        HighBohn game = new HighBohn(4);
-        System.out.println("Inside Main ");
-//        game.HighBohn(4);
 
-    }
 }
