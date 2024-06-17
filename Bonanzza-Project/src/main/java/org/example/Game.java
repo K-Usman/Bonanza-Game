@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game {
     private Cards cards;
@@ -24,7 +21,7 @@ public class Game {
             players.add(new Player(name));
         }
 
-        shuffle();
+        shuffleCards();
         distributeCards();
         selectStartingPlayer();
         displayInitialState();
@@ -55,9 +52,10 @@ public class Game {
         activePlayer = players.get(nextIndex);
     }
 
-    public void shuffle() {
+    public void shuffleCards() {
         cards.shuffle();
     }
+
 
     public void distributeCards() {
         for (Player player : players) {
